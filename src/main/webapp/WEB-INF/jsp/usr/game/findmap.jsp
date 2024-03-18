@@ -239,7 +239,7 @@ body, html {
 				<li id="OL7" data-order="0">주유소</li>
 			</ul>
 		</div>
-		<button class = "findstadium" onclick="findStadium()">주차장</button>
+		<button class = "findstadium" onclick="findStadium()">경기장</button>
 		</div>
 	</div>
 

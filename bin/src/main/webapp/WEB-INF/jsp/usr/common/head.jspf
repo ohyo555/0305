@@ -7,7 +7,7 @@
 <title>${pageTitle }</title>
 <link rel="stylesheet" href="/resource/common.css" />
 <script src="/resource/common.js" defer="defer"></script>
-
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="https://use.fontawesome.com/releases/v5.2.0/js/all.js"></script>
 
 <!-- 테일윈드 불러오기 -->
@@ -27,35 +27,89 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <style>
-
-
 #my_modal {
 	display: none;
-	width: 300px;
-	padding: 20px;
+	width: 350px;
+	padding: 30px 30px 20px 30px;
 	background-color: #fefefe;
 	border: 1px solid #888;
 	border-radius: 10px;
 	font-size: 1rem;
 }
 
-#my_modal label{
+#my_modal label {
 	font-weight: 700;
 }
 
+#my_modal>div {
+	padding: 3px;
+}
+
 .modal_content {
-      /* 다른 스타일 속성들... */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100%; /* 모달 내용을 세로 중앙 정렬하기 위한 스타일 */
+	/* 다른 스타일 속성들... */
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	height: 100%; /* 모달 내용을 세로 중앙 정렬하기 위한 스타일 */
+	background-size: cover;
+}
+
+/* 프로필 */
+.profile {
+	background-color: lightgray;
+	height: 80px;
+	width: 80px;
+	display: inline-block; /* 인라인 요소로 배치하여 한 줄에 표시되도록 함 */
+	background-size: contain; /* 또는 cover */
+	background-repeat: no-repeat;
+}
+
+.profile_button {
+	padding: 3px;
+	margin-left: 3px;
+	font-size: 12px;
+	height: 25px;
+}
+
+.register_button {
+	padding: 3px;
+	font-size: 12px;
+	height: 25px;
+}
+
+.square-box1 {
+	background-color: rgba(251,243,238);
+	padding: 10px;
+	font-size: 12px;
+	height: 130px;
+	width: 200px;
+	margin: 3px;
+	background-size: contain; /* 또는 cover */
+	background-repeat: no-repeat;
+	position: relative;
+}
+
+.square-box2 {
+	height: 110px;
+	width: 110px;
+	margin: 3px;
+	background-size: contain; /* 또는 cover */
+	background-repeat: no-repeat;
+	position: relative;
+}
+
+.modal_btn {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-top: 20px;
 }
 
 .modal_button {
-        margin: 0px 20px;
-        font-size: 12px;
-    }
-  
+	margin: 0px 10px;
+	font-size: 12px;
+}
+
 #my_modal .modal_close_btn {
 	position: absolute;
 	top: 5px;
@@ -64,25 +118,34 @@
 }
 
 #popup_open_btn {
-    display: inline-block;
-    width: 50px; /* 원하는 너비로 설정 */
-    height: 50px; /* 원하는 높이로 설정 */
-    border-radius: 50%; /* 동그란 모양으로 설정 */
-    background-image: url('https://cdn.pixabay.com/photo/2017/06/13/12/54/profile-2398783_960_720.png'); /* 이미지 경로 설정 */
-    background-size: cover; /* 배경 이미지를 커버로 설정 */
-    background-position: center; /* 배경 이미지를 가운데 정렬 */
-    background-repeat: no-repeat; /* 배경 이미지 반복 없음 */
-    border: none; /* 테두리 없음 */
-    cursor: pointer; /* 마우스 포인터 모양 변경 */
-    margin: 7px;
+	display: inline-block;
+	width: 50px; /* 원하는 너비로 설정 */
+	height: 50px; /* 원하는 높이로 설정 */
+	border-radius: 50%; /* 동그란 모양으로 설정 */
+	background-image: url('${rq.loginedMember.image }'); /* 이미지 경로 설정 */
+	background-size: cover; /* 배경 이미지를 커버로 설정 */
+	background-position: center; /* 배경 이미지를 가운데 정렬 */
+	background-repeat: no-repeat; /* 배경 이미지 반복 없음 */
+	border: none; /* 테두리 없음 */
+	cursor: pointer; /* 마우스 포인터 모양 변경 */
+	margin: 7px;
 }
 
 #popup_open_btn:focus {
-    outline: none; /* 포커스 효과 제거 */
+	outline: none; /* 포커스 효과 제거 */
 }
 
-</style>
+.pwmodify_button {
+	margin: 0;
+}
 
+.pname,
+.position,
+.pnumber {
+	display: flex;
+    align-items: center;
+}
+</style>
 </head>
 
 <body>
@@ -91,53 +154,119 @@
 			<a class="hover:underline" href="/"><i class="fa-solid fa-house-chimney"></i></a>
 			<div class="flex-grow"></div>
 			<ul class="flex">
-				<c:if test="${rq.loginedMemberId != 0}">
-					<%-- <li>${rq.loginedId } 님 <i class="fa-solid fa-face-smile fa-sm fa-spin" style="color: #efdf2e;"></i></li> --%>
-				</c:if>
-				<li class = "mt-3" style="position: relative; z-index: 999;"><a class="hover:underline" href="../article/list?boardId=1&page=1"><i class="fa-solid fa-list"></i></a>
+				<li class="mt-5" style="position: relative; z-index: 999;"><a class="hover:underline"
+					href="../article/list?boardId=1&page=1"><img width="24" height="24" src="https://img.icons8.com/material-outlined/24/circled-menu.png" alt="circled-menu"/></a>
 					<ul>
-						<li><a class="hover:underline" href="../member/membership">membership</a></li>
+						<li><a class="hover:underline" href="javascript:void(0);" onclick="memberCheck()">membership</a></li>
 						<li><a class="hover:underline" href="../game/calendar">Game Schedule</a></li>
+						<li><a class="hover:underline" href="../game/map">map</a></li>
 						<li><a class="hover:underline" href="../article/list?boardId=1&page=1">NOTICE</a></li>
 						<li><a class="hover:underline" href="../article/list?boardId=2&page=1">FREE</a></li>
 						<li><a class="hover:underline" href="../article/list?boardId=3&page=1">QnA</a></li>
+						<li><a class="hover:underline" href="../article/mylist?page=1">MY LIST</a></li>
 						<c:if test="${rq.loginedMemberId != 0}">
 							<li><a class="hover:underline" href="../article/write">write</a></li>
-							<li><a class="hover:underline" href="../member/mypage">mypage</a></li>
 						</c:if>
 					</ul></li>
 				<c:if test="${rq.loginedMemberId == 0}">
-					<li><a class="hover:underline" href="../member/login">LOGIN</a></li>
+					<li class="mt-3 text-xm"><a class="hover:underline" href="${rq.loginUri }">LOGIN</a></li>
 				</c:if>
 				<c:if test="${rq.loginedMemberId != 0}">
-					<div id="my_modal">
-						<div>
-							<label for="username">아이디:</label>
-							${rq.loginedMember.loginId }
-						</div>
-						<div>
-							<label for="aaaaa">예매내역:</label> 
-							${rq.loginedMember.birth }
-						</div>
-						<a class="modal_close_btn" onclick="closeModal()">닫기</a>
-						<div class="modal_content">
-						    <button class="modal_button" onclick="changeModalContent()">회원정보 수정</button>
-						    <button class="modal_button" onclick="logout()">로그아웃</button>
-					    </div>
-					</div>
-					
+					<!-- 회원정보 버튼 -->
 					<button id="popup_open_btn" class="btn btn-outline" type="button"></button>
+					
+					<!-- 회원정보 모달 -->
+					<div id="my_modal">
+						<div id="defaultModalContent">
+							<div type="file" id = "memberimg" class="profile" style="background-image: url('${rq.loginedMember.image }'); background-size: cover;"></div>
+							<button class="profile_button" onclick="changeprofileContent()">프로필 수정</button>
+							<div>
+								<label for="username">${rq.loginedMember.loginId }님, 환영합니다:)</label> 
+							</div>
+							<div>
+								<label for="player">응원선수:</label> 
+								<select select id="favoritePlayer" name="favoritePlayer">
+									<option value="" selected disabled>선택하세요</option>
+									<option value="1">이소영</option>
+									<option value="2">안예림</option>
+									<option value="3">염혜선</option>
+									<option value="4">김세인</option>
+									<option value="5">노란</option>
+									<option value="6">박은진</option>
+									<option value="7">이예솔</option>
+									<option value="8">메가</option>
+									<option value="9">서유경</option>
+									<option value="10">박혜민</option>
+									<option value="11">곽선옥</option>
+									<option value="12">한송이</option>
+									<option value="13">정수지</option>
+									<option value="14">김채나</option>
+									<option value="15">이선우</option>
+									<option value="16">정호영</option>
+									<option value="17">이지수</option>
+									<option value="18">강다연</option>
+									<option value="19">최효서</option>
+									<option value="20">지아</option>
+								</select>
+								<button class="register_button" onclick="register();">등록</button>
+							</div>
+							<div>
+								<label for="lv">등급/코드:</label>
+								<c:if test="${rq.loginedMember.type == null}">일반 / </c:if>
+								<c:if test="${rq.loginedMember.type != null}">${rq.loginedMember.type} / ${rq.loginedMember.membercode}</c:if>
+							</div>
+						</div>
+						
+						<c:if test = "${rq.player.image != null}">
+						<div class="modal_content">
+							<div class="square-box1">
+								<div class = "pname h-8"><label for="name">이름 :&nbsp;</label><div class = "1">${rq.player.pname}</div></div>
+								<div class = "pnumber h-8"><label for="num">번호 :&nbsp;</label><div class = "2">${rq.player.number}</div></div>
+								<div class = "position h-8"><label for="position" >포지션 :&nbsp;</label><div class = "3">${rq.player.position}</div></div>
+							</div>
+							<div class="square-box2" style="background-image: url('${rq.player.image }');"></div>
+						</div>
+						</c:if>
+						<a class="modal_close_btn" onclick="closeModal()">Χ</a>
+						<div class="modal_btn">
+							<button class="modal_button" onclick="changeModalContent()">회원정보 수정</button>
+							<button class="modal_button" onclick="logout()">로그아웃</button>
+							<button class="modal_button" onclick="del()">탈퇴</button>
+						</div>
+					</div>
+
+					<!--회원정보-->
 
 					<script>
-					
+					 /* $(document).ready(function() {
+					        // 페이지가 로드될 때 선택된 선수가 있으면 select box에 설정
+					        var selectedPlayer = getSelectedPlayerFromLocalStorage();
+					        if (selectedPlayer) {
+					            $("#favoritePlayer").val(selectedPlayer);
+					        }
+					    }); */
+					 
 					var modalHistory = []; // 모달 내용을 저장할 배열
-					
+						
+						var defaultModalContent = document.getElementById('defaultModalContent').innerHTML;
+	
+				        function openModal() {
+				            var modalContentText = document.getElementById('my_modal');
+
+				            // 모달이 열릴 때 기본 내용으로 초기화
+				            // modalContentText.innerHTML = defaultModalContent;
+				            // $("#myModal #favoritePlayer").val(selectedPlayer);
+				            
+				        }
+			        
 					 	function changeModalContent() {
 					 	// 모달 내용을 변경하는 코드 예제
 					        var modalContentText = document.getElementById('my_modal');
-
 					        // 요소가 존재하는지 확인
 					        if (modalContentText) {
+					        	document.addEventListener('DOMContentLoaded', function() {
+					                updateMaxDate();
+					            });
 					        	// 이전 모달 내용 저장
 					        	modalHistory.push(modalContentText.innerHTML);
 					        	// 새로운 모달 내용 설정
@@ -147,47 +276,150 @@
 					            '</div>' +
 					            '<div>' +
 					            '<label for="loginPw">비밀번호 확인: </label>' +
-					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="loginPw" style="height: 25px; width: 145px;" required/>' +
-					            '<div class = "text-xs text-blue-500">* 회원정보 수정 시 비밀번호를 입력해야합니다.</div>' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs" autocomplete="off" name="loginPw" style="height: 25px; width: 145px;" required/>' +
+					            '<button class="modal_button pwmodify_button" onclick="pwmodify()" style="margin-left: 7px;">변경</button>' +
+					            '<div class = "text-xs" style="color: #a32222">※ 회원정보 수정 시 비밀번호를 입력해야합니다.</div>' +
 					            '</div>' +
 					            '<div>' +
 					            '<label for="birth">생년월일: </label>' +
-					            '<input type="date" class="input input-ghost w-full max-w-xs autocomplete="off" name="birth" value="${rq.loginedMember.birth}" style="height: 25px; width: 170px;"/>' +
+					            '<input type="date" id = "birth" class="input input-ghost w-full max-w-xs autocomplete="off" name="birth" value="${rq.loginedMember.birth}" max="" onchange="updateMaxDate()" style="height: 25px; width: 170px;"/>' +
 					            '</div>' +
 					            '<div>' +
 					            '<label for="mname">이름: </label>' +
-					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="mname" value="${rq.loginedMember.mname}" style="height: 25px; width: 200px;"/>' +
-					            '</div>' +
-					            '<div>' +
-					            '<label for="lv">등급/코드: </label>' +
-					            '${rq.loginedMember.type}' + '/' +
-					            '${rq.loginedMember.membercode}' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs" autocomplete="off" name="mname" value="${rq.loginedMember.mname}" style="height: 25px; width: 200px;"/>' +
 					            '</div>' +
 					            '<div>' +
 					            '<label for="cellphoneNum">전화번호: </label>' +
-					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="cellphoneNum" value="${rq.loginedMember.cellphoneNum}" style="height: 25px; width: 170px;"/>' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs" autocomplete="off" name="cellphoneNum" value="${rq.loginedMember.cellphoneNum}" oninput="validateContactNumber(this)" maxlength="11" style="height: 25px; width: 170px;"/>' +
+					            '<div class = "text-xs" style="color: #a32222">※ -없이 숫자만 입력가능합니다.</div>' +
 					            '</div>' +
 					            '<div>' +
 					            '<label for="email">이메일: </label>' +
-					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="email" value="${rq.loginedMember.email}" style="height: 25px; width: 200px;"/>' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs" autocomplete="off" name="email" value="${rq.loginedMember.email}" style="height: 25px; width: 200px;"/>' +
 					            '</div>' +
 					            '<div>' +
-					            '<label for="address">주소: </label>' +
-					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="address" value="${rq.loginedMember.address}" style="height: 25px; width: 200px;"/>' +
+					            '<label for="address">주소: </label>' + 
+								'<input type="text" class="input input-ghost max-w-xs mb-3" id="postcode" name="postcode" autocomplete="off" placeholder="우편번호" value="${rq.loginedMember.postcode}" style="height: 25px; width: 150px;">' +
+								'<input type="button" class="mr-3 ml-3 text-xs" onclick="execDaumPostcode()" value="찾기">' + 
+								'<input type="text" class="input input-ghost  max-w-xs ml-7 mb-3" id="address" name="address" autocomplete="off" placeholder="주소" value="${rq.loginedMember.address}" style="height: 25px;  width: 200px;"><br>' +
+								'<input type="text" class="input input-ghost max-w-xs ml-7 mr-3" style="height: 25px; width: 120px;" id="detailAddress" name="detailAddress" autocomplete="off" placeholder="상세주소">' +
+								'<input type="text" class="input input-ghost max-w-xs" style="height: 25px; width: 90px;" id="extraAddress" name="extraAddress" autocomplete="off" placeholder="참고항목">' + 
 					            '</div>' +
-					            '<a class="modal_close_btn" onclick="closeModal()">닫기</a>' +
-					            '<div class="modal_content">' +
+					            '<a class="modal_close_btn" onclick="closeModal()">Χ</a>' +
+					            '<div class="modal_btn">' +
 					            '<button class="modal_button" onclick="modify()">수정</button>' +
 					            '<button class="modal_button" onclick="logout()">로그아웃</button>' +
 					            '<button class="modal_button" onclick="goBack()">뒤로가기</button>' +
 					            '</div>';
+					            
+					            updateMaxDate();
 					        }
 					    }
+					
+					 	function register() {
 
+					 	    var selectedPlayer = $("#favoritePlayer").val();
+					 	    console.log(selectedPlayer);
+					 	   
+					 	   // 선택한 선수의 값으로 select 요소의 옵션을 선택
+					 	    $("#favoritePlayer").val(selectedPlayer);
+					 	   
+					 	    $.ajax({
+					 	        type: "POST",
+					 	        url: "/usr/member/selectplayer", 
+					 	        data: { player: selectedPlayer },
+					 	        success: function(data) {
+
+					 	           	// 선수 정보 업데이트
+					                $(".1").text(data.pname);
+					                $(".2").text(data.pnumber);
+					                $(".3").text(data.position);
+
+					 	        	// 선수 요소의 배경 이미지 업데이트
+					                $(".square-box2").css("background-image", "url('" + data.pimage + "')");
+					 	        },
+					 	        error: function(error) {
+					 	            console.error("Error during registration:", error);
+					 	        }
+					 	    });
+					 	    
+					 	}
+				
+					 	function changeprofileContent() {
+						 	// 모달 내용을 변경하는 코드 예제
+						        var modalContentText = document.getElementById('my_modal');
+
+						        // 요소가 존재하는지 확인
+						        if (modalContentText) {
+						        	// 이전 모달 내용 저장
+						        	modalHistory.push(modalContentText.innerHTML);
+						        	// 새로운 모달 내용 설정
+						            modalContentText.innerHTML =  '<div>' + '<form action="../member/upload" method="post" enctype="multipart/form-data" class = "p-0">' +
+						            '<input type="file" id="photoInput" name="photoInput" accept="image/*" class = "text-xs">' + '</div>' +
+						            '<button type="button" onclick="uploadPhoto()" class = "text-xs w-20">사진 업로드</button>' + 
+						        	'</form>' +
+						    		'<canvas id="myCanvas" width="100" height="100"></canvas>' +
+						            '<a class="modal_close_btn" onclick="closeModal()">Χ</a>' +
+						            '<button class="modal_button" onclick="goBack()">뒤로가기</button>';
+						        }
+						    }
+					 	
+					 	function uploadPhoto() {
+					 	    var fileInput = document.getElementById('photoInput');
+					 	   
+					 	    var file = fileInput.files[0];
+
+					 	    if (file) {
+					 	        var formData = new FormData();
+					 	        formData.append('photo', file);
+
+					 	       fetch('../member/upload', {
+					 	    	    method: 'POST',
+					 	    	    body: formData
+					 	    	})
+					 	    	.then(response => {
+					 	    	    // HTTP 상태 코드가 200번대가 아닌 경우
+					 	    	    if (!response.ok) {
+					 	    	        throw new Error(`HTTP error! Status: ${response.status}`);
+					 	    	    }
+
+					 	    	    // 텍스트 형식으로 응답 내용을 받아옴
+			 	    	    return response.text();
+					 	    	})
+					 	    	.then(data => {
+					 	    		alert(data);
+					 	    		closeModal();
+
+					 	    	    // 응답 내용을 그대로 사용하거나 처리
+					 	    	    // 예를 들어, HTML 형식의 응답을 모달에 표시하는 등의 작업을 수행할 수 있습니다.
+					 	    	})
+					 	    	.catch(error => {
+					 	    		alert(error);
+					 	    	});
+					 	    } else {
+					 	        alert('Please select a photo to upload.');
+					 	    }
+					 	}
+					 	
+					 /* 	function previewFile() {
+					 	    var fileInput = document.getElementById('photoInput');
+					 	    var profileImage = document.getElementById('memberimg');
+					 	   console.log(fileInput);
+					 	    console.log(profileImage);
+					 	    var file = fileInput.files[0];
+					 	    if (file) {
+					 	        var reader = new FileReader();
+					 	        reader.onload = function(e) {
+					 	            profileImage.style.backgroundImage = 'url(' + e.target.result + ')';
+					 	        };
+					 	        reader.readAsDataURL(file);
+					 	    }
+					 	} */
+					 	
 			            function modal(id) {
 			                var zIndex = 9999;
-			                var modal = document.getElementById(id);
-			
+			                var modal = document.getElementById(id); /* id는 my_modal */
+							console.log(id);
 			                // 모달 div 뒤에 희끄무레한 레이어
 			                var bg = document.createElement('div');
 			                bg.className = 'modal_bg'; // 클래스 추가
@@ -204,6 +436,11 @@
 			                });
 			                document.body.append(bg);
 			
+			                if (${rq.selectedplayer != null}){
+				                $("#favoritePlayer").val(${rq.selectedplayer});
+			                }
+			                console.log(${rq.selectedplayer});
+			                
 			                // 닫기 버튼 처리, 시꺼먼 레이어와 모달 div 지우기
 			               modal.querySelector('.modal_close_btn').addEventListener('click', function() {
 							    bg.remove();
@@ -238,6 +475,99 @@
 			                modal('my_modal');
 			            });
 			            
+			            // 회원정보 수정
+			            function modify() {
+			                // 모달 내용에서 필요한 값들을 가져옴
+			                var loginPw = document.getElementsByName("loginPw")[0].value;
+			                var birth = document.getElementsByName("birth")[0].value;
+			                var mname = document.getElementsByName("mname")[0].value;
+			                var cellphoneNum = document.getElementsByName("cellphoneNum")[0].value;
+			                var email = document.getElementsByName("email")[0].value;
+			                var address = document.getElementsByName("address")[0].value;
+
+			                // AJAX를 이용하여 서버에 데이터 전송
+			                var xhr = new XMLHttpRequest();
+			                xhr.open("POST", '../member/doModify', true);
+			                xhr.setRequestHeader("Content-Type", "application/json");
+
+			                // 전송할 데이터를 JSON 형태로 변환
+			                var data = JSON.stringify({
+			                    loginPw: loginPw,
+			                    birth: birth,
+			                    mname: mname,
+			                    cellphoneNum: cellphoneNum,
+			                    email: email,
+			                    address: address
+			                });
+
+			                xhr.onreadystatechange = function () {
+			                    if (xhr.readyState == 4 && xhr.status == 200) {
+			                        // 서버에서의 응답 처리
+			                       /*  console.log(xhr.responseText); */
+			                        alert(xhr.responseText);
+			                    }
+			                };
+
+			                // 데이터 전송
+			                xhr.send(data);
+			            }
+			            
+			            // 비밀번호 변경
+			            function pwmodify() {
+			            	// 모달 내용을 변경하는 코드 예제
+					        var modalContentText = document.getElementById('my_modal');
+					        
+					        // 요소가 존재하는지 확인
+					        if (modalContentText) {
+					        	// 이전 모달 내용 저장
+					        	modalHistory.push(modalContentText.innerHTML);
+					        	// 새로운 모달 내용 설정
+					            modalContentText.innerHTML = '<div>' +
+					            '<label for="loginPw">기존 비밀번호: </label>' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="loginPw" style="height: 25px; width: 145px;" required/>' +
+					            '</div>' +
+					            '<div>' +
+					            '<label for="new_loginPw">새로운 비밀번호: </label>' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="new_loginPw" style="height: 25px; width: 170px;" required/>' +
+					            '</div>' +
+					            '<a class="modal_close_btn" onclick="closeModal()">Χ</a>' +
+					            '<div class="modal_content">' +
+					            '<button class="modal_button" onclick="dopwmodify()">수정</button>' +
+					            '<button class="modal_button" onclick="goBack()">뒤로가기</button>' +
+					            '</div>';
+					        }
+					    }
+			            
+			            function dopwmodify() {
+			                // 모달 내용에서 필요한 값들을 가져옴
+			                var loginPw = document.getElementsByName("loginPw")[0].value;
+			                var new_loginPw = document.getElementsByName("new_loginPw")[0].value;
+			                
+			                // AJAX를 이용하여 서버에 데이터 전송
+			                var xhr = new XMLHttpRequest();
+			                xhr.open("POST", '../member/dopwModify', true);
+			                xhr.setRequestHeader("Content-Type", "application/json");
+
+			                // 전송할 데이터를 JSON 형태로 변환
+			                var data = JSON.stringify({
+			                    loginPw: loginPw,
+			                    new_loginPw: new_loginPw,
+			                });
+
+			                xhr.onreadystatechange = function () {
+			                    if (xhr.readyState == 4 && xhr.status == 200) {
+			                        // 서버에서의 응답 처리
+			                       /*  console.log(xhr.responseText); */
+			                        alert(xhr.responseText);
+			                    }
+			                };
+
+			                // 데이터 전송
+			                xhr.send(data);
+			                closeModal();
+			            }
+			            
+			            // 모달닫기
 			            function closeModal() {
 			                // 모달과 배경 요소를 찾기
 			                var modal = document.getElementById('my_modal');
@@ -252,25 +582,159 @@
 			                if (bg) {
 			                    bg.remove();
 			                }
+			                window.location.reload();
 			            }
 			            
-			            function modify() {
+			           /*  function modify() {
 			            	window.location.href = '../member/doModify';
-			            }
+			            } */
 			            
+			            // 뒤로가기
 			            function goBack() {
 			                // 브라우저 히스토리에서 뒤로가기를 누를 때 이전 모달 내용을 불러와서 설정
 			                var modalContentText = document.getElementById('my_modal');
 			                if (modalHistory.length > 0) {
 			                    modalContentText.innerHTML = modalHistory.pop();
 			                }
+ 
 			            }
 
+			            // 멤버쉽 체크
+			        	function memberCheck(){
+			        		if(${rq.loginedMember.type != null}){
+			        			alert("이미 멤버쉽이 등록되었습니다.");
+			        		} else {
+			        		      // 여기에 원하는 페이지 이동 로직 추가
+			        		      window.location.href = "../member/membership";
+			        		    }
+			        	}
+			        	
+			            // 로그아웃
 			            function logout() {
 			                if (confirm('로그아웃 할래?')) {
-			                    window.location.href = '../member/doLogout';
+			                    window.location.href = '${rq.logoutUri }';
 			                }
 			            }
+			            
+			            // 회원탈퇴
+			            function del() {
+			            	// 모달 내용을 변경하는 코드 예제
+					        var modalContentText = document.getElementById('my_modal');
+					        
+					        // 요소가 존재하는지 확인
+					        if (modalContentText) {
+					        	// 이전 모달 내용 저장
+					        	modalHistory.push(modalContentText.innerHTML);
+					        	// 새로운 모달 내용 설정
+					            modalContentText.innerHTML = '<div>' +
+					            '<label for="loginPw">비밀번호 확인: </label>' +
+					            '<input type="text" class="input input-ghost w-full max-w-xs autocomplete="off" name="loginPw" style="height: 25px; width: 145px;" required/>' +
+					            '</div>' +
+					            '<div class = "text-xs" style="color: #a32222">※ 회원 탈퇴 시 계정 복구가 불가능합니다.</div>' +
+					            '<a class="modal_close_btn" onclick="closeModal()">Χ</a>' +
+					            '<div class="modal_content">' +
+					            '<button class="modal_button" onclick="dodel()">탈퇴</button>' +
+					            '<button class="modal_button" onclick="goBack()">뒤로가기</button>' +
+					            '</div>';
+					        }
+					    }
+			            
+			            function dodel() {
+			                // 모달 내용에서 필요한 값들을 가져옴
+			                var loginPw = document.getElementsByName("loginPw")[0].value;
+			                
+			                // AJAX를 이용하여 서버에 데이터 전송
+			                var xhr = new XMLHttpRequest();
+			                xhr.open("POST", '../member/dodel', true);
+			                xhr.setRequestHeader("Content-Type", "application/json");
+							console.log(loginPw);
+			                // 전송할 데이터를 JSON 형태로 변환
+			                var data = JSON.stringify({
+			                    loginPw: loginPw,
+			                });
+
+			                xhr.onreadystatechange = function () {
+			                    if (xhr.readyState == 4 && xhr.status == 200) {
+			                        // 서버에서의 응답 처리
+			                       /*  console.log(xhr.responseText); */
+			                        alert(xhr.responseText);
+			                    }
+			                };
+
+			                // 데이터 전송
+			                xhr.send(data);
+			                closeModal();
+			            }
+			            
+			         	// 전화번호 입력 시 숫자만 입력 가능하고 최대 11자리 가능
+			            function validateContactNumber(input) {
+			                // 숫자만 포함된 정규표현식
+			                var regex = /^[0-9]+$/;
+
+			                // 입력된 값에서 숫자만 추출
+			                var numericValue = input.value.replace(/\D/g, '');
+
+			                // 정규표현식에 맞지 않는 경우 입력값을 재설정
+			                if (!regex.test(numericValue)) {
+			                    input.value = numericValue.substring(0, numericValue.length - 1);
+			                }
+			            }
+			            
+			    		// 오늘 날짜 이후 선택 불가능
+			            function updateMaxDate() {
+			                var today = new Date().toISOString().split('T')[0];
+			                document.getElementById('birth').max = today;
+			            }
+			    		
+			    		// 주소 찾기
+					    function execDaumPostcode() {
+					        new daum.Postcode({
+					            oncomplete: function(data) {
+					                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+					
+					                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+					                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+					                var addr = ''; // 주소 변수
+					                var extraAddr = ''; // 참고항목 변수
+					
+					                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+					                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+					                    addr = data.roadAddress;
+					                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+					                    addr = data.jibunAddress;
+					                }
+					
+					                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+					                if(data.userSelectedType === 'R'){
+					                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+					                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+					                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+					                        extraAddr += data.bname;
+					                    }
+					                    // 건물명이 있고, 공동주택일 경우 추가한다.
+					                    if(data.buildingName !== '' && data.apartment === 'Y'){
+					                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+					                    }
+					                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+					                    if(extraAddr !== ''){
+					                        extraAddr = ' (' + extraAddr + ')';
+					                    }
+					                    // 조합된 참고항목을 해당 필드에 넣는다.
+					                    document.getElementById("extraAddress").value = extraAddr;
+					                
+					                } else {
+					                    document.getElementById("extraAddress").value = '';
+					                }
+					
+					                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+					                document.getElementById('postcode').value = data.zonecode;
+					                document.getElementById("address").value = addr;
+					                // 커서를 상세주소 필드로 이동한다.
+					                document.getElementById("detailAddress").focus();
+					            }
+					        }).open();
+					    }
+			  
 			        </script>
 
 				</c:if>

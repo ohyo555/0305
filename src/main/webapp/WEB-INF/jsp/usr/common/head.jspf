@@ -601,6 +601,7 @@
 
 			            // 멤버쉽 체크
 			        	function memberCheck(){
+			            	
 			        		if(${rq.loginedMember.type != null}){
 			        			alert("이미 멤버쉽이 등록되었습니다.");
 			        		} else {

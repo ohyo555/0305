@@ -73,6 +73,8 @@ CREATE TABLE `member`(
     delDate DATETIME COMMENT '탈퇴 날짜'
 );
 
+ALTER TABLE `member` ADD COLUMN `type` CHAR(20) AFTER `authLevel`;
+		
 # testdata 생성
 INSERT INTO `member`
 SET loginId = 'admin',
@@ -148,19 +150,21 @@ CREATE TABLE membership(
 
 # schedule 테이블 생성
 CREATE TABLE `schedule`(
-    id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `date` CHAR(20) NOT NULL,
-    num int(10) NOT NULL,
-    stype CHAR(20) NOT NULL,
-    `time` CHAR(20) NOT NULL,
-    gym CHAR(20) NOT NULL,
-    boradcasting CHAR(20) NOT NULL,
-    `round` int(10) NOT NULL,
-    info CHAR(20) NOT NULL,
+    `date` CHAR(20),
+    num INT(10) ,
+    stype CHAR(20),
+    `time` CHAR(20) ,
+    gym CHAR(20) ,
+    boradcasting CHAR(20) ,
+    `round` CHAR(20) ,
+    info CHAR(20) ,
+    game CHAR(20)
 );
 
-select *
-from `schedule`;
+ALTER TABLE `schedule` ADD COLUMN  id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT FIRST
+DROP TABLE `schedule`
+SELECT *
+FROM `schedule`;
 #---------------------------------------------------------------------------
 
 # game 테이블 생성
@@ -226,8 +230,8 @@ updateDate = NOW(),
 
 # reactionPoint 테이블 생성
 
-select *
-from reactionPoint
+SELECT *
+FROM reactionPoint
 CREATE TABLE reactionPoint(
     id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
     memberId INT(10) UNSIGNED NOT NULL,
@@ -551,7 +555,7 @@ updateDate = NOW();
 
 
 ###############################################
-SELECT m.*, pname, `number` as pnumber, `position`
+SELECT m.*, pname, `number` AS pnumber, `position`
 			FROM `member` AS m
 			INNER JOIN player AS p
 			ON m.fplayer = p.id
@@ -583,16 +587,22 @@ FROM article;
 SELECT *
 FROM `comment`; 
 
-select *
-from reactionpoint;
+SELECT *
+FROM reactionpoint;
 SELECT *
 FROM `member`; 
 
-select p.id
-from player AS p
-inner join `member` as m
-on m.fplayer = p.id
-where m.id = 3
+SELECT * FROM `member` WHERE id = 2
+
+SELECT *
+FROM membership; 
+
+DELETE FROM membership WHERE id = 2
+SELECT p.id
+FROM player AS p
+INNER JOIN `member` AS m
+ON m.fplayer = p.id
+WHERE m.id = 3
 
 SELECT *
 FROM team; 
@@ -600,8 +610,8 @@ FROM team;
 SELECT *
 FROM board;
 
-select *
-from player;
+SELECT *
+FROM player;
  
 
 SELECT LAST_INSERT_ID();

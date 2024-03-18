@@ -124,8 +124,10 @@ public class MemberService {
 
 	private String saveFile(String fileName, byte[] fileBytes) throws IOException {
         // 파일을 실제 경로에 저장하는 로직 추가
-        // (여기에서는 간단하게 파일명으로 저장하는 것으로 예제 작성)
-        String filePath = "C:\\work\\sts-4.21.0.RELEASE-workspace\\myproject\\src\\main\\resources\\static\\resource\\" + fileName;
+        // (여기에서는 간단하게 파일명으로 저장하는 것으로 예제 작성)C:\Users\82107\git\
+		
+		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$" + fileName);
+        String filePath = "C:\\Users\\82107\\git\\my_project_03\\src\\main\\resources\\static\\resource\\" + fileName;
         Files.write(Paths.get(filePath), fileBytes);
         return filePath;
     }
@@ -149,6 +151,14 @@ public class MemberService {
 
 	public int getselectedplayer(int loginedMemberId) {
 		return memberRepository.getselectedplayer(loginedMemberId);
+	}
+
+	public int isselectplayer(String loginId) {
+		return memberRepository.isselectplayer(loginId);
+	}
+
+	public Member getMemberByLoginId_1(String loginId) {
+		return memberRepository.getMemberByLoginId_1(loginId);
 	}
 
 }
